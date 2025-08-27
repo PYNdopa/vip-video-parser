@@ -1,15 +1,393 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + Vue</title>
-  </head>
-  <body>
-    <h1>你好！世界</h1>
-    <div id="app">  <img :src="src/assets/vue.svg" alt="支付二维码">
-      <p>支付成功后自动跳转</p></div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIP视频解析工具</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #F8F9FA;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            color: #7f8c8d;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid #eaecef;
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f2f5;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-title i {
+            margin-right: 10px;
+            color: #3498db;
+        }
+        
+        .interface-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .interface-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        
+        .interface-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-color: #3498db;
+        }
+        
+        .interface-item label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+        
+        .interface-item select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: white;
+        }
+        
+        .url-input-container {
+            display: flex;
+            margin: 25px 0;
+        }
+        
+        .url-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #ddd;
+            border-radius: 10px 0 0 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .url-input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .parse-btn {
+            padding: 0 30px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 0 10px 10px 0;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .parse-btn:hover {
+            background: #2980b9;
+        }
+        
+        .instructions {
+            background: #e8f4fc;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .instructions ol {
+            padding-left: 20px;
+            margin: 15px 0;
+        }
+        
+        .instructions li {
+            margin-bottom: 10px;
+        }
+        
+        .sites-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .site-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+        }
+        
+        .site-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            border-color: #3498db;
+        }
+        
+        .site-btn i {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .site-btn span {
+            font-weight: bold;
+        }
+        
+        .disclaimer {
+            background: #fff5f5;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #ff6b6b;
+            margin-top: 30px;
+            font-size: 0.9rem;
+        }
+        
+        footer {
+            text-align: center;
+            color: #7f8c8d;
+            padding: 20px;
+            margin-top: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            .interface-selector {
+                grid-template-columns: 1fr;
+            }
+            
+            .url-input-container {
+                flex-direction: column;
+            }
+            
+            .url-input {
+                border-radius: 10px;
+                margin-bottom: 10px;
+            }
+            
+            .parse-btn {
+                border-radius: 10px;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>VIP视频解析工具</h1>
+            <p>可解析各大视频网站VIP视频，支持爱奇艺、腾讯视频、优酷、芒果TV、哔哩哔哩等平台</p>
+        </header>
+        
+        <div class="card">
+            <h2 class="card-title"><i class="fas fa-plug"></i> 解析接口选择</h2>
+            
+            <div class="interface-selector">
+                <div class="interface-item">
+                    <label for="interface1">视频解析接口1</label>
+                    <select id="interface1" class="url-input">
+                        <option value="https://video.isyour.love/player/getplayer?url=">官方接口1</option>
+                        <option value="https://video.isyour.love/player/getplayer?url=">备用接口1</option>
+                    </select>
+                </div>
+                
+                <div class="interface-item">
+                    <label for="interface2">视频解析接口2</label>
+                    <select id="interface2" class="url-input">
+                        <option value="https://api3.example.com/?url=">官方接口2</option>
+                        <option value="https://api4.example.com/?url=">备用接口2</option>
+                    </select>
+                </div>
+                
+                <div class="interface-item">
+                    <label for="interface3">视频解析接口3</label>
+                    <select id="interface3" class="url-input">
+                        <option value="https://api5.example.com/?url=">官方接口3</option>
+                        <option value="https://api6.example.com/?url=">备用接口3</option>
+                    </select>
+                </div>
+                
+                <div class="interface-item">
+                    <label for="interface4">视频解析接口4</label>
+                    <select id="interface4" class="url-input">
+                        <option value="https://api7.example.com/?url=">官方接口4</option>
+                        <option value="https://api8.example.com/?url=">备用接口4</option>
+                    </select>
+                </div>
+            </div>**
+            
+            <h2 class="card-title"><i class="fas fa-link"></i> 请输入视频链接并点击解析</h2>
+            <p>支持各大视频网站的VIP视频，输入视频地址后点击解析按钮即可观看</p>
+            
+            <div class="url-input-container">
+                <input type="text" class="url-input" placeholder="请粘贴视频网址到这里...">
+                <button class="parse-btn">解析播放</button>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2 class="card-title"><i class="fas fa-info-circle"></i> 使用说明</h2>
+            
+            <div class="instructions">
+                <ol>
+                    <li>点击下方视频网站图标，在新窗口中浏览并找到想要观看的视频</li>
+                    <li>复制视频页面的网址（在浏览器地址栏中）</li>
+                    <li>将复制的网址粘贴到上方输入框，点击"解析播放"按钮</li>
+                    <li>如果解析失败，可尝试切换其他解析接口</li>
+                </ol>
+            </div>
+            
+            <h2 class="card-title"><i class="fas fa-video"></i> 支持的视频网站</h2>
+            
+            <div class="sites-grid">
+                <a href="https://www.iqiyi.com/" class="site-btn" target="_blank">
+                    <i class="fas fa-play-circle" style="color: #00be06;"></i>
+                    <span>爱奇艺</span>
+                </a>
+                
+                <a href="https://v.qq.com/" class="site-btn" target="_blank">
+                    <i class="fab fa-tencent-weibo" style="color: #1e6dea;"></i>
+                    <span>腾讯视频</span>
+                </a>
+                
+                <a href="https://www.youku.com/" class="site-btn" target="_blank">
+                    <i class="fas fa-tv" style="color: #0083ff;"></i>
+                    <span>优酷</span>
+                </a>
+                
+                <a href="https://www.mgtv.com/" class="site-btn" target="_blank">
+                    <i class="fas fa-film" style="color: #ff4222;"></i>
+                    <span>芒果TV</span>
+                </a>
+                
+                <a href="https://www.bilibili.com/" class="site-btn" target="_blank">
+                    <i class="fas fa-bolt" style="color: #fb7299;"></i>
+                    <span>哔哩哔哩</span>
+                </a>
+                
+                <a href="http://www.le.com/" class="site-btn" target="_blank">
+                    <i class="fas fa-play" style="color: #00c3ff;"></i>
+                    <span>乐视视频</span>
+                </a>
+            </div>
+        </div>
+        
+        <div class="disclaimer">
+            <h2 class="card-title"><i class="fas fa-exclamation-triangle"></i> 免责声明</h2>
+            <p>本工具仅供学习交流使用，请尊重版权，支持正版。所有解析接口均来自互联网，不代表本站立场。观看任何视频请遵守相关法律法规，如有侵权内容，请联系我们删除。</p>
+        </div>
+    </div>
+    
+    <footer>
+        <p>© 2023 VIP视频解析工具 - 仅供学习交流使用</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const parseBtn = document.querySelector('.parse-btn');
+            const urlInput = document.querySelector('.url-input');
+            const interfaceSelects = document.querySelectorAll('select');
+            
+            // 解析按钮点击事件
+            parseBtn.addEventListener('click', function() {
+                const videoUrl = urlInput.value.trim();
+                
+                if (!videoUrl) {
+                    alert('请输入视频网址！');
+                    return;
+                }
+                
+                // 获取当前选中的接口
+                let selectedInterface = '';
+                for (const select of interfaceSelects) {
+                    if (select.value) {
+                        selectedInterface = select.value;
+                        break;
+                    }
+                }
+                
+                if (!selectedInterface) {
+                    alert('请选择一个解析接口！');
+                    return;
+                }
+                
+                // 在实际应用中，这里会调用解析接口
+                // 此处仅做演示，弹出一个提示
+                alert(`正在使用接口: ${selectedInterface}\n解析视频: ${videoUrl}`);
+                
+                // 实际应用中，这里会跳转到解析页面或打开播放器
+                // window.open(selectedInterface + encodeURIComponent(videoUrl), '_blank');
+            });
+            
+            // 为每个接口选择框添加事件，确保只有一个被选中
+            interfaceSelects.forEach(select => {
+                select.addEventListener('change', function() {
+                    if (this.value) {
+                        interfaceSelects.forEach(s => {
+                            if (s !== this) s.value = '';
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
 </html>
