@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIP视频解析工具</title>
+    <title>VIP视频解析工具 - 在线使用</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -202,11 +202,44 @@
             font-size: 0.9rem;
         }
         
+        .video-container {
+            display: none;
+            margin-top: 30px;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        #video-player {
+            width: 100%;
+            height: 500px;
+        }
+        
         footer {
             text-align: center;
             color: #7f8c8d;
             padding: 20px;
             margin-top: 40px;
+        }
+        
+        .success-message {
+            display: none;
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        .error-message {
+            display: none;
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            text-align: center;
         }
         
         @media (max-width: 768px) {
@@ -227,6 +260,10 @@
                 border-radius: 10px;
                 padding: 15px;
             }
+            
+            #video-player {
+                height: 300px;
+            }
         }
     </style>
 </head>
@@ -243,44 +280,60 @@
             <div class="interface-selector">
                 <div class="interface-item">
                     <label for="interface1">视频解析接口1</label>
-                    <select id="interface1" class="url-input">
-                        <option value="https://video.isyour.love/player/getplayer?url=">官方接口1</option>
-                        <option value="https://video.isyour.love/player/getplayer?url=">备用接口1</option>
+                    <select id="interface1">
+                        <option value="">-- 请选择 --</option>
+                        <option value="https://api.xiaoqiu123.com/jx.php?url=">小秋接口</option>
+                        <option value="https://api.927jx.com/vip/?url=">927解析</option>
                     </select>
                 </div>
                 
                 <div class="interface-item">
                     <label for="interface2">视频解析接口2</label>
-                    <select id="interface2" class="url-input">
-                        <option value="https://api3.example.com/?url=">官方接口2</option>
-                        <option value="https://api4.example.com/?url=">备用接口2</option>
+                    <select id="interface2">
+                        <option value="">-- 请选择 --</option>
+                        <option value="https://api.52jiexi.com/?url=">52解析接口</option>
+                        <option value="https://jx.iztyy.com/svip/?url=">iztyy解析</option>
                     </select>
                 </div>
                 
                 <div class="interface-item">
                     <label for="interface3">视频解析接口3</label>
-                    <select id="interface3" class="url-input">
-                        <option value="https://api5.example.com/?url=">官方接口3</option>
-                        <option value="https://api6.example.com/?url=">备用接口3</option>
+                    <select id="interface3">
+                        <option value="">-- 请选择 --</option>
+                        <option value="https://jx.mw0.cc/?url=">mw0解析</option>
+                        <option value="https://jx.bozrc.com:4433/player/?url=">bozrc解析</option>
                     </select>
                 </div>
                 
                 <div class="interface-item">
                     <label for="interface4">视频解析接口4</label>
-                    <select id="interface4" class="url-input">
-                        <option value="https://api7.example.com/?url=">官方接口4</option>
-                        <option value="https://api8.example.com/?url=">备用接口4</option>
+                    <select id="interface4">
+                        <option value="">-- 请选择 --</option>
+                        <option value="https://jx.ivito.cn/?url=">ivito解析</option>
+                        <option value="https://jx.iztyy.com/svip/?url=">iztyy备用</option>
                     </select>
                 </div>
-            </div>**
+            </div>
             
             <h2 class="card-title"><i class="fas fa-link"></i> 请输入视频链接并点击解析</h2>
             <p>支持各大视频网站的VIP视频，输入视频地址后点击解析按钮即可观看</p>
             
             <div class="url-input-container">
-                <input type="text" class="url-input" placeholder="请粘贴视频网址到这里...">
-                <button class="parse-btn">解析播放</button>
+                <input type="text" class="url-input" id="video-url" placeholder="请粘贴视频网址到这里...">
+                <button class="parse-btn" id="parse-btn">解析播放</button>
             </div>
+            
+            <div class="success-message" id="success-message">
+                解析成功！正在加载视频...
+            </div>
+            
+            <div class="error-message" id="error-message">
+                解析失败，请尝试其他接口或检查网址是否正确！
+            </div>
+        </div>
+        
+        <div class="video-container" id="video-container">
+            <video id="video-player" controls></video>
         </div>
         
         <div class="card">
@@ -342,16 +395,24 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const parseBtn = document.querySelector('.parse-btn');
-            const urlInput = document.querySelector('.url-input');
+            const parseBtn = document.getElementById('parse-btn');
+            const videoUrlInput = document.getElementById('video-url');
             const interfaceSelects = document.querySelectorAll('select');
+            const videoContainer = document.getElementById('video-container');
+            const videoPlayer = document.getElementById('video-player');
+            const successMessage = document.getElementById('success-message');
+            const errorMessage = document.getElementById('error-message');
+            
+            // 隐藏消息
+            successMessage.style.display = 'none';
+            errorMessage.style.display = 'none';
             
             // 解析按钮点击事件
             parseBtn.addEventListener('click', function() {
-                const videoUrl = urlInput.value.trim();
+                const videoUrl = videoUrlInput.value.trim();
                 
                 if (!videoUrl) {
-                    alert('请输入视频网址！');
+                    showError('请输入视频网址！');
                     return;
                 }
                 
@@ -365,16 +426,37 @@
                 }
                 
                 if (!selectedInterface) {
-                    alert('请选择一个解析接口！');
+                    showError('请选择一个解析接口！');
                     return;
                 }
                 
-                // 在实际应用中，这里会调用解析接口
-                // 此处仅做演示，弹出一个提示
-                alert(`正在使用接口: ${selectedInterface}\n解析视频: ${videoUrl}`);
+                // 隐藏错误消息，显示加载中
+                errorMessage.style.display = 'none';
+                parseBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 解析中...';
+                parseBtn.disabled = true;
                 
-                // 实际应用中，这里会跳转到解析页面或打开播放器
-                // window.open(selectedInterface + encodeURIComponent(videoUrl), '_blank');
+                // 拼接解析URL
+                const finalUrl = selectedInterface + encodeURIComponent(videoUrl);
+                
+                // 模拟解析过程（实际应用中这里会进行真实解析）
+                setTimeout(function() {
+                    // 模拟75%的成功率
+                    if (Math.random() > 0.25) {
+                        showSuccess();
+                        videoPlayer.src = finalUrl;
+                        videoContainer.style.display = 'block';
+                        videoPlayer.load();
+                        
+                        // 滚动到视频位置
+                        videoContainer.scrollIntoView({ behavior: 'smooth' });
+                    } else {
+                        showError('解析失败，请尝试其他接口！');
+                        videoContainer.style.display = 'none';
+                    }
+                    
+                    parseBtn.innerHTML = '解析播放';
+                    parseBtn.disabled = false;
+                }, 1500);
             });
             
             // 为每个接口选择框添加事件，确保只有一个被选中
@@ -387,6 +469,39 @@
                     }
                 });
             });
+            
+            // 显示成功消息
+            function showSuccess() {
+                successMessage.style.display = 'block';
+                errorMessage.style.display = 'none';
+                
+                // 5秒后自动隐藏
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                }, 5000);
+            }
+            
+            // 显示错误消息
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                successMessage.style.display = 'none';
+                
+                // 5秒后自动隐藏
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 5000);
+            }
+            
+            // 示例：预填充一些常见的视频网址
+            const exampleLinks = [
+                'https://www.iqiyi.com/v_19rqy6ovlc.html',
+                'https://v.qq.com/x/cover/mzc00200g5g4a3a.html',
+                'https://www.youku.com/show_page/id_z6ce4c5b8a7b311e6b8b3.html'
+            ];
+            
+            // 随机选择一个示例链接预填充（仅用于演示）
+            videoUrlInput.placeholder = '例如: ' + exampleLinks[Math.floor(Math.random() * exampleLinks.length)];
         });
     </script>
 </body>
